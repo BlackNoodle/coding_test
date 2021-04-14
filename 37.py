@@ -9,16 +9,11 @@ for _ in range(m):
     if arr[i-1][j-1] > c:
         arr[i-1][j-1] = c
 
-for i in range(n):
-    arr[i][i] = 0
-
 for m in range(n):
     for i in range(n):
         for j in range(n):
-            if i == j:
-                continue
-            arr[i][j] = min(arr[i][j], arr[i][m]+arr[m][j])
-
+            if i != j and arr[i][m]+arr[m][j] < arr[i][j]:
+                arr[i][j] = arr[i][m]+arr[m][j]
 
 for i in arr:
     for j in i:
