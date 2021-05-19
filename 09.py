@@ -25,3 +25,9 @@ def solution(s):
         answer = min(answer, len(ans))
 
     return answer
+
+print(solution("aabbaccc"))
+print(solution("ababcdcdababcdcd"))
+print(solution("abcabcdede"))
+print(solution("abcabcabcabcdededededede"))
+print(solution("xababcdcdababcdcd"))
