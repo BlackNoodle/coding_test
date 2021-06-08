@@ -1,29 +1,22 @@
-from queue import PriorityQueue
+import heapq
 
 
 def solution(scoville, K):
     answer = 0
-    q = PriorityQueue()
 
-    for i in scoville:
-        q.put(i)
+    heapq.heapify(scoville)
 
-    ans = False
+    while scoville[0] < K:
 
-    while q.qsize() > 1:
-        tmp1 = q.get()
-        tmp2 = q.get()
-
-        if tmp1 >= K:
-            ans = True
+        a = heapq.heappop(scoville)
+        if len(scoville) > 0:
+            b = heapq.heappop(scoville)
+        else:
+            answer = -1
             break
-        q.put(tmp1 + 2 * tmp2)
         answer += 1
+        heapq.heappush(scoville, a + 2 * b)
 
-    if ans:
-        return answer
-    else:
-        return -1
-
+    return answer
 
 print(solution([1, 2, 3, 9, 10, 12], 7))
