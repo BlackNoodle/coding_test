@@ -1,82 +1,59 @@
 from collections import deque
-import sys
 
-n = int(sys.stdin.readline())
+n = int(input())
 arr = []
-position = None
 
 for i in range(n):
-    arr.append(list(map(int, sys.stdin.readline().split())))
+    arr.append(list(map(int, input().split())))
     for j in range(n):
         if arr[i][j] == 9:
             position = (i, j)
+            arr[i][j] = 0
 
-state = 2
-cnt = 0
+size = 2
+dx = [0, 0, 1, -1]
+dy = [1, -1, 0, 0]
 
-def bfs(visited, start, n, state, purpose):
+def bfs():
+    dis = [[-1]*n for _ in range(n)]
     q = deque()
-    q.append((start, 0))
-    find = False
-    time = None
-    dx = [0, 0, 1, -1]
-    dy = [1, -1, 0, 0]
-
+    q.append(position)
+    dis[position[0]][position[1]] = 0
     while q:
-        po, t = q.popleft()
-        x, y = po
-        if (x, y) == purpose:
-            find = True
-            time = t
-            break
+        x, y = q.popleft()
         for i in range(4):
-            cx = x + dx[i]
-            cy = y + dy[i]
-            if 0 <= cx < n and 0 <= cy < n and not visited[cx][cy] and arr[cx][cy] <= state:
-                q.append(((cx, cy), t + 1))
-                visited[cx][cy] = 1
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if 0 <= nx < n and 0 <= ny < n and arr[nx][ny] <= size and dis[nx][ny] == -1:
+                q.append((nx, ny))
+                dis[nx][ny] = dis[x][y] + 1
 
-    if find:
-        return time
-    else:
-        return 0
+    return dis
 
-def can_eat(state, n):
-    ok = []
+def find_fish(dis):
+    po = None
+    time = 1e9
     for i in range(n):
         for j in range(n):
-            if 1 <= arr[i][j] <= 6 and arr[i][j] < state:
-                ok.append((i, j))
-    return ok
+            if 0 < dis[i][j] < time and 1 <= arr[i][j] < size:
+                time = dis[i][j]
+                po = (i, j)
 
+    return po, time
+
+cnt = 0
 ans = 0
 
 while True:
-    can = can_eat(state, n)
-    if not can:
+    dis = bfs()
+    position, time = find_fish(dis)
+    if not position:
         break
-
-    min_time = 1e9
-    min_fed = None
-
-    for tmp in can:
-        visited = [[0]*n for _ in range(n)]
-        time = bfs(visited, position, n, state, tmp)
-        if time != 0:
-            if time < min_time:
-                min_time = time
-                min_fed = tmp
-
-    if min_fed == None:
-        break
-
-    arr[min_fed[0]][min_fed[1]] = 9
-    arr[position[0]][position[1]] = 0
-    position = min_fed
-    ans += min_time
     cnt += 1
-    if cnt == state:
-        state += 1
+    arr[position[0]][position[1]] = 0
+    if cnt == size:
         cnt = 0
+        size += 1
+    ans += time
 
 print(ans)
